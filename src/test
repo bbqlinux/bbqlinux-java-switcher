@@ -1,0 +1,9 @@
+#!/bin/bash
+
+sudo rm -rf /usr/bin/bbqlinux-java-switcher
+sudo rm -rf /usr/lib/bbqlinux-java-switcher
+sudo rm -rf /usr/share/bbqlinux-java-switcher
+
+sudo cp -R usr /
+
+bbqlinux-java-switcher $1
