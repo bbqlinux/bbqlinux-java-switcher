@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=BBQLinux Java Switcher
+GenericName=BBQLinux Java Switcher
+Comment=Switch between java versions
+Exec=gksudo /usr/bin/bbqlinux-java-switcher
+Icon=bbqlinux_icon_blue_48x48
+Terminal=False
+Type=Application
+Categories=System;
