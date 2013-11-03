@@ -24,17 +24,17 @@ from ui.qt_interface import SwitcherWindow
 if __name__ == "__main__":
     # CLI
     cliparser = argparse.ArgumentParser(description='Switch between JDK6 and OpenJDK7.')
-    cliparser.add_argument("-2", "--jdk6", help="Enables JDK6", action="store_true")
-    cliparser.add_argument("-3", "--openjdk7", help="Enables OpenJDK7", action="store_true")
+    cliparser.add_argument("-6", "--jdk6", help="Enables JDK6", action="store_true")
+    cliparser.add_argument("-7", "--openjdk7", help="Enables OpenJDK7", action="store_true")
     
     cliargs = cliparser.parse_args()
     if cliargs.jdk6:
-        os.system("rm /usr/bin/java")
-        os.system("ln -s /opt/java6/bin/java /usr/bin/java")
+        os.system("rm %s" % SwitcherWindow.JAVA_SLINK)
+        os.system("ln -s %s %s" % (SwitcherWindow.JDK6_PATH, SwitcherWindow.JAVA_SLINK))
         sys.exit(0)
     if cliargs.openjdk7:
-        os.system("rm /usr/bin/python")
-        os.system("ln -s /usr/lib/jvm/java-7-openjdk/jre/bin/java /usr/bin/java")
+        os.system("rm %s" % SwitcherWindow.JAVA_SLINK)
+        os.system("ln -s %s %s" % (SwitcherWindow.OPENJDK7_PATH, SwitcherWindow.JAVA_SLINK))
         sys.exit(0)
     
     # GUI
