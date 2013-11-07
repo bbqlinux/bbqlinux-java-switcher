@@ -28,6 +28,9 @@ if __name__ == "__main__":
     cliparser.add_argument("-7", "--openjdk7", help="Enables OpenJDK7", action="store_true")
     
     cliargs = cliparser.parse_args()
+    if cliargs.jdk6 and cliargs.openjdk7:
+        print("Error: Multiple versions specified. Please choose one version to switch to.")
+        sys.exit(1)
     if cliargs.jdk6:
         os.system("rm %s" % SwitcherWindow.JAVA_SLINK)
         os.system("ln -s %s %s" % (SwitcherWindow.JDK6_PATH, SwitcherWindow.JAVA_SLINK))
