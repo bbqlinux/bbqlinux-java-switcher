@@ -32,12 +32,14 @@ if __name__ == "__main__":
         print("Error: Multiple versions specified. Please choose one version to switch to.")
         sys.exit(1)
     if cliargs.jdk6:
-        os.system("rm %s" % SwitcherWindow.JAVA_SLINK)
-        os.system("ln -s %s %s" % (SwitcherWindow.JDK6_PATH, SwitcherWindow.JAVA_SLINK))
+        for cmd in SwitcherWindow.commands:
+            os.system("rm %s%s" % (SwitcherWindow.BIN_PATH, cmd))
+            os.system("ln -s %s%s %s%s" % (SwitcherWindow.JDK6_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
         sys.exit(0)
     if cliargs.openjdk7:
-        os.system("rm %s" % SwitcherWindow.JAVA_SLINK)
-        os.system("ln -s %s %s" % (SwitcherWindow.OPENJDK7_PATH, SwitcherWindow.JAVA_SLINK))
+        for cmd in SwitcherWindow.commands:
+            os.system("rm %s%s" % (SwitcherWindow.BIN_PATH, cmd))
+            os.system("ln -s %s%s %s%s" % (SwitcherWindow.OPENJDK7_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
         sys.exit(0)
     
     # GUI

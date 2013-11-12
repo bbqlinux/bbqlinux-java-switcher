@@ -25,9 +25,11 @@ from PyQt4 import QtGui, QtCore, uic
 
 class SwitcherWindow(QtGui.QMainWindow):
 
-    JAVA_SLINK = "/usr/bin/java"
-    JDK6_PATH = "/opt/java6/bin/java"
-    OPENJDK7_PATH = "/usr/lib/jvm/java-7-openjdk/jre/bin/java"
+    BIN_PATH = "/usr/bin/"
+    JDK6_PATH = "/opt/java6/bin/"
+    OPENJDK7_PATH = "/usr/lib/jvm/java-7-openjdk/jre/bin/"
+
+    commands = ['java', 'javac', 'javadoc', 'javah', 'javap', 'javaws']
 
     def __init__(self):
         # Check if we run as root
@@ -59,13 +61,14 @@ class SwitcherWindow(QtGui.QMainWindow):
         self.refresh_button_state()
 
     def refresh_button_state(self):
-        python_path = self.get_active_java(self.JAVA_SLINK)
-        if python_path == self.JDK6_PATH:
+        cmd = "java"
+        python_path = self.get_active_java("%s%s" % (self.BIN_PATH, cmd))
+        if python_path == "%s%s" % (self.JDK6_PATH, cmd):
             self.ui.button_jdk6.setText(unicode("Active"))
             self.ui.button_jdk6.setEnabled(False)
             self.ui.button_openjdk7.setText(unicode("Activate"))
             self.ui.button_openjdk7.setEnabled(True)
-        elif python_path == self.OPENJDK7_PATH:
+        elif python_path == "%s%s" % (self.OPENJDK7_PATH, cmd):
             self.ui.button_openjdk7.setText(unicode("Active"))
             self.ui.button_openjdk7.setEnabled(False)
             self.ui.button_jdk6.setText(unicode("Activate"))
@@ -77,13 +80,17 @@ class SwitcherWindow(QtGui.QMainWindow):
             self.ui.button_openjdk7.setEnabled(True)
 
     def button_jdk6_clicked(self):
-        os.system("rm %s" % self.JAVA_SLINK)
-        os.system("ln -s %s %s" % (self.JDK6_PATH, self.JAVA_SLINK))
+        for cmd in self.commands:
+            os.system("rm %s%s" % (self.BIN_PATH, cmd))
+            os.system("ln -s %s%s %s%s" % (self.JDK6_PATH, cmd, self.BIN_PATH, cmd))
+
         self.refresh_button_state()
 
     def button_openjdk7_clicked(self):
-        os.system("rm %s" % self.JAVA_SLINK)
-        os.system("ln -s %s %s" % (self.OPENJDK7_PATH, self.JAVA_SLINK))
+        for cmd in self.commands:
+            os.system("rm %s%s" % (self.BIN_PATH, cmd))
+            os.system("ln -s %s%s %s%s" % (self.OPENJDK7_PATH, cmd, self.BIN_PATH, cmd))
+
         self.refresh_button_state()
 
     def get_active_java(self, link):
