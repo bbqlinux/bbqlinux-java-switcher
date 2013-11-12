@@ -39,7 +39,10 @@ if __name__ == "__main__":
     if cliargs.openjdk7:
         for cmd in SwitcherWindow.commands:
             os.system("rm %s%s" % (SwitcherWindow.BIN_PATH, cmd))
-            os.system("ln -s %s%s %s%s" % (SwitcherWindow.OPENJDK7_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
+            if cmd == 'java':
+                os.system("ln -s %s%s %s%s" % (SwitcherWindow.JRE7_OPENJDK_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
+            else:
+                os.system("ln -s %s%s %s%s" % (SwitcherWindow.JDK7_OPENJDK_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
         sys.exit(0)
     
     # GUI

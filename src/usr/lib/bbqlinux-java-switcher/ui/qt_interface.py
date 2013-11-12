@@ -27,7 +27,8 @@ class SwitcherWindow(QtGui.QMainWindow):
 
     BIN_PATH = "/usr/bin/"
     JDK6_PATH = "/opt/java6/bin/"
-    OPENJDK7_PATH = "/usr/lib/jvm/java-7-openjdk/jre/bin/"
+    JDK7_OPENJDK_PATH = "/usr/lib/jvm/java-7-openjdk/bin/"
+    JRE7_OPENJDK_PATH = "/usr/lib/jvm/java-7-openjdk/jre/bin/"
 
     commands = ['java', 'javac', 'javadoc', 'javah', 'javap', 'javaws']
 
@@ -68,7 +69,7 @@ class SwitcherWindow(QtGui.QMainWindow):
             self.ui.button_jdk6.setEnabled(False)
             self.ui.button_openjdk7.setText(unicode("Activate"))
             self.ui.button_openjdk7.setEnabled(True)
-        elif python_path == "%s%s" % (self.OPENJDK7_PATH, cmd):
+        elif python_path == "%s%s" % (self.JRE7_OPENJDK_PATH, cmd):
             self.ui.button_openjdk7.setText(unicode("Active"))
             self.ui.button_openjdk7.setEnabled(False)
             self.ui.button_jdk6.setText(unicode("Activate"))
@@ -89,7 +90,10 @@ class SwitcherWindow(QtGui.QMainWindow):
     def button_openjdk7_clicked(self):
         for cmd in self.commands:
             os.system("rm %s%s" % (self.BIN_PATH, cmd))
-            os.system("ln -s %s%s %s%s" % (self.OPENJDK7_PATH, cmd, self.BIN_PATH, cmd))
+            if cmd == 'java':
+                os.system("ln -s %s%s %s%s" % (self.JRE7_OPENJDK_PATH, cmd, self.BIN_PATH, cmd))
+            else:
+                os.system("ln -s %s%s %s%s" % (self.JDK7_OPENJDK_PATH, cmd, self.BIN_PATH, cmd))
 
         self.refresh_button_state()
 
