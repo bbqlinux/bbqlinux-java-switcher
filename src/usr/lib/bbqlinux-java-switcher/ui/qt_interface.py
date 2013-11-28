@@ -26,11 +26,15 @@ from PyQt4 import QtGui, QtCore, uic
 class SwitcherWindow(QtGui.QMainWindow):
 
     BIN_PATH = "/usr/bin/"
+    JDK6_JAVA_HOME = "/opt/java6"
     JDK6_PATH = "/opt/java6/bin/"
+    JDK7_OPENJDK_JAVA_HOME = "/usr/lib/jvm/java-7-openjdk"
     JDK7_OPENJDK_PATH = "/usr/lib/jvm/java-7-openjdk/bin/"
     JRE7_OPENJDK_PATH = "/usr/lib/jvm/java-7-openjdk/jre/bin/"
 
     commands = ['java', 'javac', 'javadoc', 'javah', 'javap', 'javaws']
+
+    NOTICE = '\r\nJava version changed!\r\n\nWell, not completely...\r\nYou have to run the following command manually:\r\n\nexport JAVA_HOME='
 
     def __init__(self):
         # Check if we run as root
@@ -85,6 +89,7 @@ class SwitcherWindow(QtGui.QMainWindow):
             os.system("rm %s%s" % (self.BIN_PATH, cmd))
             os.system("ln -s %s%s %s%s" % (self.JDK6_PATH, cmd, self.BIN_PATH, cmd))
 
+        self.ui.noticeTextEdit.setText("%s%s" % (self.NOTICE, self.JDK6_JAVA_HOME))
         self.refresh_button_state()
 
     def button_openjdk7_clicked(self):
@@ -95,6 +100,7 @@ class SwitcherWindow(QtGui.QMainWindow):
             else:
                 os.system("ln -s %s%s %s%s" % (self.JDK7_OPENJDK_PATH, cmd, self.BIN_PATH, cmd))
 
+        self.ui.noticeTextEdit.setText("%s%s" % (self.NOTICE, self.JDK7_OPENJDK_JAVA_HOME))
         self.refresh_button_state()
 
     def get_active_java(self, link):

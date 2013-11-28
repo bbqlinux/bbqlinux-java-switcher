@@ -1,7 +1,7 @@
 # Maintainer: Daniel Hillenbrand <codeworkx [at] bbqlinux [dot] org>
 
 pkgname=bbqlinux-java-switcher
-pkgver=1.0.5
+pkgver=1.0.6
 pkgrel=1
 pkgdesc="BBQLinux Java Switcher"
 arch=('any')
