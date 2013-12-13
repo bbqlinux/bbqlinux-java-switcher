@@ -32,6 +32,16 @@ if __name__ == "__main__":
         print("Error: Multiple versions specified. Please choose one version to switch to.")
         sys.exit(1)
     if cliargs.jdk6:
+        # First let's check if all the binaries exist, if not exit, printing which aren't found
+        missing_binaries = False # If this is set to True, binaries are missing and we will exit
+        for cmd in SwitcherWindow.commands:
+            if not os.path.isfile(SwitcherWindow.JDK6_PATH + cmd):
+                missing_binaries = True
+                print("Error: The binary %s%s was not found!" % (SwitcherWindow.JDK6_PATH, cmd))
+        if missing_binaries: # Exit if binaries are missing
+            print("Error: Exiting without switching due to missing binaries.")
+            sys.exit(1)
+            
         for cmd in SwitcherWindow.commands:
             os.system("rm %s%s" % (SwitcherWindow.BIN_PATH, cmd))
             os.system("ln -s %s%s %s%s" % (SwitcherWindow.JDK6_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
@@ -39,6 +49,23 @@ if __name__ == "__main__":
         print("%s%s \r\n" % (SwitcherWindow.NOTICE, SwitcherWindow.JDK6_JAVA_HOME))
         sys.exit(0)
     if cliargs.openjdk7:
+        # First let's check if all the binaries exist, if not exit, printing which aren't found
+        missing_binaries = False # If this is set to True, binaries are missing and we will exit
+        for cmd in SwitcherWindow.commands:
+            if cmd == 'java':
+                if not os.path.isfile(SwitcherWindow.JRE7_OPENJDK_PATH + cmd):
+                    missing_binaries = True
+                    print("Error: The binary %s%s was not found!" % (SwitcherWindow.JRE7_OPENJDK_PATH, cmd))
+            elif cmd == 'javaws':
+                pass # JDK7 has no javaws
+            else:
+                if not os.path.isfile(SwitcherWindow.JDK7_OPENJDK_PATH + cmd):
+                    missing_binaries = True
+                    print("Error: The binary %s%s was not found!" % (SwitcherWindow.JDK7_OPENJDK_PATH, cmd))
+        if missing_binaries:
+            print("Error: Exiting without switching due to missing binaries.")
+            sys.exit(1)
+
         for cmd in SwitcherWindow.commands:
             os.system("rm %s%s" % (SwitcherWindow.BIN_PATH, cmd))
             if cmd == 'java':

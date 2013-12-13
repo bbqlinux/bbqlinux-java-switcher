@@ -84,6 +84,28 @@ class SwitcherWindow(QtGui.QMainWindow):
             self.ui.button_openjdk7.setText(unicode("Activate"))
             self.ui.button_openjdk7.setEnabled(True)
 
+        # Disable buttons if binaries not found.
+        for cmd in self.commands:
+            # Check JDK6 binaries
+            if not os.path.isfile(self.JDK6_PATH + cmd):
+                self.ui.button_jdk6.setText(unicode("Not Found"))
+                self.ui.button_jdk6.setEnabled(False)
+                break
+        for cmd in self.commands:
+            # Check JDK7 binaries (using 2 for loops so we can utilize break)
+            if cmd == 'java':
+                if not os.path.isfile(self.JRE7_OPENJDK_PATH + cmd):
+                    self.ui.button_openjdk7.setText(unicode("Not Found"))
+                    self.ui.button_openjdk7.setEnabled(False)
+                    break
+            elif cmd == 'javaws':
+                pass # JDK7 has no javaws
+            else:
+                if not os.path.isfile(self.JDK7_OPENJDK_PATH + cmd):
+                    self.ui.button_openjdk7.setText(unicode("Not Found"))
+                    self.ui.button_openjdk7.setEnabled(False)
+                    break       
+
     def button_jdk6_clicked(self):
         for cmd in self.commands:
             os.system("rm %s%s" % (self.BIN_PATH, cmd))
