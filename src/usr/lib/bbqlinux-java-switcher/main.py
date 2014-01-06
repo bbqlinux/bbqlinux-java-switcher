@@ -26,7 +26,7 @@ if __name__ == "__main__":
     cliparser = argparse.ArgumentParser(description='Switch between JDK6 and OpenJDK7.')
     cliparser.add_argument("-6", "--jdk6", help="Enables JDK6", action="store_true")
     cliparser.add_argument("-7", "--openjdk7", help="Enables OpenJDK7", action="store_true")
-    
+
     cliargs = cliparser.parse_args()
     if cliargs.jdk6 and cliargs.openjdk7:
         print("Error: Multiple versions specified. Please choose one version to switch to.")
@@ -41,12 +41,13 @@ if __name__ == "__main__":
         if missing_binaries: # Exit if binaries are missing
             print("Error: Exiting without switching due to missing binaries.")
             sys.exit(1)
-            
+
         for cmd in SwitcherWindow.commands:
             os.system("rm %s%s" % (SwitcherWindow.BIN_PATH, cmd))
             os.system("ln -s %s%s %s%s" % (SwitcherWindow.JDK6_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
 
-        print("%s%s \r\n" % (SwitcherWindow.NOTICE, SwitcherWindow.JDK6_JAVA_HOME))
+        os.system("echo 'export JAVA_HOME=%s' > %s" % (SwitcherWindow.JDK6_JAVA_HOME, SwitcherWindow.PROFILE_FILE))
+        print("%s\r\n" % SwitcherWindow.NOTICE)
         sys.exit(0)
     if cliargs.openjdk7:
         # First let's check if all the binaries exist, if not exit, printing which aren't found
@@ -73,9 +74,10 @@ if __name__ == "__main__":
             else:
                 os.system("ln -s %s%s %s%s" % (SwitcherWindow.JDK7_OPENJDK_PATH, cmd, SwitcherWindow.BIN_PATH, cmd))
 
-        print("%s%s \r\n" % (SwitcherWindow.NOTICE, SwitcherWindow.JDK7_OPENJDK_JAVA_HOME))
+        os.system("echo 'export JAVA_HOME=%s' > %s" % (SwitcherWindow.JDK7_OPENJDK_JAVA_HOME, SwitcherWindow.PROFILE_FILE))
+        print("%s\r\n" % SwitcherWindow.NOTICE)
         sys.exit(0)
-    
+
     # GUI
     app = QtGui.QApplication(sys.argv)
     win = SwitcherWindow()
