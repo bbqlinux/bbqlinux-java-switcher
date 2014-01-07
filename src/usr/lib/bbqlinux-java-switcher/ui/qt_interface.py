@@ -34,7 +34,8 @@ class SwitcherWindow(QtGui.QMainWindow):
 
     commands = ['java', 'javac', 'javadoc', 'javah', 'javap', 'javaws']
 
-    NOTICE = '\r\nJava version changed!\r\n\nWell, not completely...\r\nYou have to run the following command manually:\r\n\nexport JAVA_HOME='
+    PROFILE_FILE = '/etc/profile.d/override_java.sh'
+    NOTICE = '\r\nJava version changed!\r\n\nWell, not completely...\r\nPlease source the following file in your bashrc:\r\n\n%s' % PROFILE_FILE
 
     def __init__(self):
         # Check if we run as root
@@ -50,7 +51,7 @@ class SwitcherWindow(QtGui.QMainWindow):
 
         # Show the window
         self.ui.show()
-        
+
         # Move main window to center
         qr = self.ui.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
@@ -104,14 +105,15 @@ class SwitcherWindow(QtGui.QMainWindow):
                 if not os.path.isfile(self.JDK7_OPENJDK_PATH + cmd):
                     self.ui.button_openjdk7.setText(unicode("Not Found"))
                     self.ui.button_openjdk7.setEnabled(False)
-                    break       
+                    break
 
     def button_jdk6_clicked(self):
         for cmd in self.commands:
             os.system("rm %s%s" % (self.BIN_PATH, cmd))
             os.system("ln -s %s%s %s%s" % (self.JDK6_PATH, cmd, self.BIN_PATH, cmd))
 
-        self.ui.noticeTextEdit.setText("%s%s" % (self.NOTICE, self.JDK6_JAVA_HOME))
+        os.system("echo 'export JAVA_HOME=%s' > %s" % (self.JDK6_JAVA_HOME, self.PROFILE_FILE))
+        self.ui.noticeTextEdit.setText("%s" % self.NOTICE)
         self.refresh_button_state()
 
     def button_openjdk7_clicked(self):
@@ -122,12 +124,13 @@ class SwitcherWindow(QtGui.QMainWindow):
             else:
                 os.system("ln -s %s%s %s%s" % (self.JDK7_OPENJDK_PATH, cmd, self.BIN_PATH, cmd))
 
-        self.ui.noticeTextEdit.setText("%s%s" % (self.NOTICE, self.JDK7_OPENJDK_JAVA_HOME))
+        os.system("echo 'export JAVA_HOME=%s' > %s" % (self.JDK7_OPENJDK_JAVA_HOME, self.PROFILE_FILE))
+        self.ui.noticeTextEdit.setText("%s" % self.NOTICE)
         self.refresh_button_state()
 
     def get_active_java(self, link):
         try:
             path = os.readlink(link)
             return path
-        except Exception: 
+        except Exception:
             pass
