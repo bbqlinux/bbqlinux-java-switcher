@@ -1,13 +1,13 @@
 # Maintainer: Daniel Hillenbrand <codeworkx [at] bbqlinux [dot] org>
 
 pkgname=bbqlinux-java-switcher
-pkgver=1.0.7
+pkgver=1.1.0
 pkgrel=1
 pkgdesc="BBQLinux Java Switcher"
 arch=('any')
 url="https://github.com/bbqlinux/bbqlinux-java-switcher"
 license=('GPL')
-depends=('bbqlinux-artwork' 'python2' 'qt4' 'python2-pyqt4' 'gksu')
+depends=('bbqlinux-artwork' 'python2' 'qt4' 'python2-pyqt4' 'gksu' 'java-common')
 
 package() {
   cd "$pkgdir"

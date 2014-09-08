@@ -18,24 +18,19 @@ import sys
 sys.path.append('/usr/lib/bbqlinux-java-switcher')
 import os
 import string
-
-from switcher import SwitcherEngine
+import subprocess
 
 from PyQt4 import QtGui, QtCore, uic
 
+JDK6_STRING = 'java-6-oracle'
+OPENJDK7_STRING = 'java-7-openjdk'
+OPENJDK8_STRING = 'java-8-openjdk'
+
 class SwitcherWindow(QtGui.QMainWindow):
 
-    BIN_PATH = "/usr/bin/"
-    JDK6_JAVA_HOME = "/opt/java6"
-    JDK6_PATH = "/opt/java6/bin/"
-    JDK7_OPENJDK_JAVA_HOME = "/usr/lib/jvm/java-7-openjdk"
-    JDK7_OPENJDK_PATH = "/usr/lib/jvm/java-7-openjdk/bin/"
-    JRE7_OPENJDK_PATH = "/usr/lib/jvm/java-7-openjdk/jre/bin/"
-
-    commands = ['java', 'javac', 'javadoc', 'javah', 'javap', 'javaws']
-
-    PROFILE_FILE = '/etc/profile.d/override_java.sh'
-    NOTICE = '\r\nJava version changed!\r\n\nWell, not completely...\r\nPlease source the following file in your bashrc:\r\n\n%s' % PROFILE_FILE
+    global JDK6_STRING
+    global OPENJDK7_STRING
+    global OPENJDK8_STRING
 
     def __init__(self):
         # Check if we run as root
@@ -62,75 +57,107 @@ class SwitcherWindow(QtGui.QMainWindow):
         self.connect(self.ui.button_exit, QtCore.SIGNAL("clicked()"), QtGui.qApp, QtCore.SLOT("quit()"))
         self.connect(self.ui.button_jdk6, QtCore.SIGNAL("clicked()"), self.button_jdk6_clicked)
         self.connect(self.ui.button_openjdk7, QtCore.SIGNAL("clicked()"), self.button_openjdk7_clicked)
+        self.connect(self.ui.button_openjdk8, QtCore.SIGNAL("clicked()"), self.button_openjdk8_clicked)
 
         # Refresh button states
         self.refresh_button_state()
 
     def refresh_button_state(self):
-        cmd = "java"
-        python_path = self.get_active_java("%s%s" % (self.BIN_PATH, cmd))
-        if python_path == "%s%s" % (self.JDK6_PATH, cmd):
+        cur_java = self.get_default_java()
+
+        if JDK6_STRING in cur_java:
+            self.button_jdk6_active(True)
+            self.button_openjdk7_active(False)
+            self.button_openjdk8_active(False)
+        elif OPENJDK7_STRING in cur_java:
+            self.button_jdk6_active(False)
+            self.button_openjdk7_active(True)
+            self.button_openjdk8_active(False)
+        elif OPENJDK8_STRING in cur_java:
+            self.button_jdk6_active(False)
+            self.button_openjdk7_active(False)
+            self.button_openjdk8_active(True)
+        else:
+            self.button_jdk6_active(False)
+            self.button_openjdk7_active(False)
+            self.button_openjdk8_active(False)
+
+        # Disable buttons if binaries not found.
+        java_supported = self.get_supported_java()
+
+        if not JDK6_STRING in java_supported:
+            self.ui.button_jdk6.setText(unicode("Not Found"))
+            self.ui.button_jdk6.setEnabled(False)
+
+        if not OPENJDK7_STRING in java_supported:
+            self.ui.button_openjdk7.setText(unicode("Not Found"))
+            self.ui.button_openjdk7.setEnabled(False)
+
+        if not OPENJDK8_STRING in java_supported:
+            self.ui.button_openjdk8.setText(unicode("Not Found"))
+            self.ui.button_openjdk8.setEnabled(False)
+
+
+
+    # ORACLE JAVA 6
+    def button_jdk6_clicked(self):
+        os.system("archlinux-java set %s" % (JDK6_STRING))
+        self.refresh_button_state()
+
+    def button_jdk6_active(self, state):
+        if state == True:
             self.ui.button_jdk6.setText(unicode("Active"))
             self.ui.button_jdk6.setEnabled(False)
-            self.ui.button_openjdk7.setText(unicode("Activate"))
-            self.ui.button_openjdk7.setEnabled(True)
-        elif python_path == "%s%s" % (self.JRE7_OPENJDK_PATH, cmd):
-            self.ui.button_openjdk7.setText(unicode("Active"))
-            self.ui.button_openjdk7.setEnabled(False)
-            self.ui.button_jdk6.setText(unicode("Activate"))
-            self.ui.button_jdk6.setEnabled(True)
         else:
             self.ui.button_jdk6.setText(unicode("Activate"))
             self.ui.button_jdk6.setEnabled(True)
+
+    # OPENJDK 7
+    def button_openjdk7_clicked(self):
+        os.system("archlinux-java set %s" % (OPENJDK7_STRING))
+        self.refresh_button_state()
+
+    def button_openjdk7_active(self, state):
+        if state == True:
+            self.ui.button_openjdk7.setText(unicode("Active"))
+            self.ui.button_openjdk7.setEnabled(False)
+        else:
             self.ui.button_openjdk7.setText(unicode("Activate"))
             self.ui.button_openjdk7.setEnabled(True)
 
-        # Disable buttons if binaries not found.
-        for cmd in self.commands:
-            # Check JDK6 binaries
-            if not os.path.isfile(self.JDK6_PATH + cmd):
-                self.ui.button_jdk6.setText(unicode("Not Found"))
-                self.ui.button_jdk6.setEnabled(False)
-                break
-        for cmd in self.commands:
-            # Check JDK7 binaries (using 2 for loops so we can utilize break)
-            if cmd == 'java':
-                if not os.path.isfile(self.JRE7_OPENJDK_PATH + cmd):
-                    self.ui.button_openjdk7.setText(unicode("Not Found"))
-                    self.ui.button_openjdk7.setEnabled(False)
-                    break
-            elif cmd == 'javaws':
-                pass # JDK7 has no javaws
-            else:
-                if not os.path.isfile(self.JDK7_OPENJDK_PATH + cmd):
-                    self.ui.button_openjdk7.setText(unicode("Not Found"))
-                    self.ui.button_openjdk7.setEnabled(False)
-                    break
-
-    def button_jdk6_clicked(self):
-        for cmd in self.commands:
-            os.system("rm %s%s" % (self.BIN_PATH, cmd))
-            os.system("ln -s %s%s %s%s" % (self.JDK6_PATH, cmd, self.BIN_PATH, cmd))
-
-        os.system("echo 'export JAVA_HOME=%s' > %s" % (self.JDK6_JAVA_HOME, self.PROFILE_FILE))
-        self.ui.noticeTextEdit.setText("%s" % self.NOTICE)
+    # OPENJDK 8
+    def button_openjdk8_clicked(self):
+        os.system("archlinux-java set %s" % (OPENJDK8_STRING))
         self.refresh_button_state()
 
-    def button_openjdk7_clicked(self):
-        for cmd in self.commands:
-            os.system("rm %s%s" % (self.BIN_PATH, cmd))
-            if cmd == 'java':
-                os.system("ln -s %s%s %s%s" % (self.JRE7_OPENJDK_PATH, cmd, self.BIN_PATH, cmd))
-            else:
-                os.system("ln -s %s%s %s%s" % (self.JDK7_OPENJDK_PATH, cmd, self.BIN_PATH, cmd))
 
-        os.system("echo 'export JAVA_HOME=%s' > %s" % (self.JDK7_OPENJDK_JAVA_HOME, self.PROFILE_FILE))
-        self.ui.noticeTextEdit.setText("%s" % self.NOTICE)
-        self.refresh_button_state()
+    def button_openjdk8_active(self, state):
+        if state == True:
+            self.ui.button_openjdk8.setText(unicode("Active"))
+            self.ui.button_openjdk8.setEnabled(False)
+        else:
+            self.ui.button_openjdk8.setText(unicode("Activate"))
+            self.ui.button_openjdk8.setEnabled(True)
 
-    def get_active_java(self, link):
+
+
+    def get_default_java(self):
         try:
-            path = os.readlink(link)
-            return path
-        except Exception:
+            p1 = subprocess.Popen(['archlinux-java', 'get'], stdout=subprocess.PIPE)
+            output = p1.communicate()[0]
+            print("Default Java: %s" % output)
+            self.ui.noticeTextEdit.setText(unicode("Default Java: %s" % output))
+            return output
+        except:
+            print "Unexpected error:", sys.exc_info()[1]
+            pass
+   
+    def get_supported_java(self):
+        try:
+            p1 = subprocess.Popen(['archlinux-java', 'status'], stdout=subprocess.PIPE)
+            output = p1.communicate()[0]
+            print("Supported Java: %s" % output)
+            return output
+        except:
+            print "Unexpected error:", sys.exc_info()[1]
             pass

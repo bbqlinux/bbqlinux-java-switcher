@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>444</width>
-    <height>307</height>
+    <height>243</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
    <widget class="QPushButton" name="button_openjdk7">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>176</x>
       <y>50</y>
       <width>91</width>
       <height>24</height>
@@ -44,7 +44,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>230</y>
+      <y>170</y>
       <width>79</width>
       <height>24</height>
      </rect>
@@ -77,7 +77,7 @@
    <widget class="QLabel" name="label_python3">
     <property name="geometry">
      <rect>
-      <x>295</x>
+      <x>183</x>
       <y>20</y>
       <width>81</width>
       <height>21</height>
@@ -98,10 +98,10 @@
    <widget class="QTextEdit" name="noticeTextEdit">
     <property name="geometry">
      <rect>
-      <x>33</x>
+      <x>60</x>
       <y>90</y>
-      <width>371</width>
-      <height>121</height>
+      <width>321</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="acceptDrops">
@@ -112,6 +112,40 @@
     </property>
     <property name="readOnly">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="button_openjdk8">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>50</y>
+      <width>91</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Active</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_python3_2">
+    <property name="geometry">
+     <rect>
+      <x>295</x>
+      <y>20</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>OpenJDK 8</string>
     </property>
    </widget>
   </widget>
