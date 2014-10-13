@@ -2,12 +2,12 @@
 
 pkgname=bbqlinux-java-switcher
 pkgver=1.1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="BBQLinux Java Switcher"
 arch=('any')
 url="https://github.com/bbqlinux/bbqlinux-java-switcher"
 license=('GPL')
-depends=('bbqlinux-artwork' 'python2' 'qt4' 'python2-pyqt4' 'gksu' 'java-common')
+depends=('bbqlinux-artwork' 'python2' 'qt4' 'python2-pyqt4' 'gksu' 'java-runtime-common')
 
 package() {
   cd "$pkgdir"
